@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
+// this text is for testing pull request -Tejas
 
 void main() {
   runApp(const MyApp());
@@ -44,7 +45,8 @@ class _LuxDisplayState extends State<LuxDisplay> {
   Future<double> getLuxValue() async {
     try {
       await Future.delayed(const Duration(milliseconds: 500));
-      final double luxValue = (await platform.invokeMethod('getLuxValue')).toDouble();
+      final double luxValue =
+          (await platform.invokeMethod('getLuxValue')).toDouble();
       return luxValue.roundToDouble();
     } on PlatformException catch (e) {
       // Handle any errors, like a missing sensor or permission issues
@@ -78,17 +80,21 @@ class _LuxDisplayState extends State<LuxDisplay> {
             ),
             SizedBox(height: 20), // Add some space between the text and button
             ElevatedButton(
-              onPressed: isLoading ? null : () async {
-                setState(() {
-                  isLoading = true;
-                });
-                double currentLuxValue = await getLuxValue();
-                setState(() {
-                  lux = currentLuxValue;
-                  isLoading = false;
-                });
-              },
-              child: isLoading ? CircularProgressIndicator() : Text('Get Lux Value'),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      double currentLuxValue = await getLuxValue();
+                      setState(() {
+                        lux = currentLuxValue;
+                        isLoading = false;
+                      });
+                    },
+              child: isLoading
+                  ? CircularProgressIndicator()
+                  : Text('Get Lux Value'),
             ),
           ],
         ),
