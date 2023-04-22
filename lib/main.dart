@@ -42,6 +42,8 @@ class _LuxDisplayState extends State<LuxDisplay> {
   static const platform = const MethodChannel('com.example.myapp/light_sensor');
   double lux = 0;
   bool isLoading = false;
+  String recommendation = 'Go outside and face the front of your phone to the sun while pushing the button below.';
+  bool buttonPressedOnce = false; // Add this state variable
   final numberFormatter = NumberFormat("#,##0", "en_US"); // Create a number formatter
 
 
@@ -63,130 +65,80 @@ class _LuxDisplayState extends State<LuxDisplay> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Lux Display'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Current Lux Value:',
-              style: Theme.of(context).textTheme.headline5,
-            ),
-            Text(
-              numberFormatter.format(lux), // Format the lux value
-              style: Theme.of(context).textTheme.headline3,
-            ),
-            SizedBox(height: 20), // Add some space between the text and button
-            ElevatedButton(
-              onPressed: isLoading
-                  ? null
-                  : () async {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      double currentLuxValue = await getLuxValue();
-                      setState(() {
-                        lux = currentLuxValue;
-                        isLoading = false;
-                      });
-                    },
-              child: isLoading
-                  ? CircularProgressIndicator()
-                  : Text('Get Lux Value'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+String getRecommendation(double luxValue) {
+    if (luxValue < 1000) {
+      return "Very Overcast: Spend 30min outside to set your circadian clock.";
+    } else if (luxValue >= 1000 && luxValue < 5000) {
+      return "Overcast: Spend 20min outside to set your circadian clock.";
+    } else if (luxValue >= 5000 && luxValue < 25000) {
+      return "Sunny: Spend 15min outside to set your circadian clock.";
+    } else if (luxValue >= 25000 && luxValue < 100000) {
+      return "Very Sunny: Spend 10min outside to set your circadian clock.";
+    } else {
+      return "Holy shit it's bright. Just get 5min to set your circadian clock.";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
+    // This method is rerun every time setState is called
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Lux Display'),
       ),
-      body: Center(
+      body: Center( 
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
+        child: SingleChildScrollView( // Wrap the Column widget with SingleChildScrollView
+          child: Column( 
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+          // children horizontally, and tries to be as tall as its parent
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              if (recommendation.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    recommendation,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+              SizedBox(height: 60), // Increased height of SizedBox to move recommendation text closer to the top
+              Text(
+                'Current Lux Value:',
+                style: Theme.of(context).textTheme.headline5,
+              ),
+              Text(
+                numberFormatter.format(lux),
+                style: Theme.of(context).textTheme.headline3,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: isLoading ? null : () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  double currentLuxValue = await getLuxValue();
+                  setState(() {
+                    lux = currentLuxValue;
+                    recommendation = getRecommendation(currentLuxValue);
+                    isLoading = false;
+                    buttonPressedOnce = true;
+                  });
+                },
+                child: isLoading
+                    ? CircularProgressIndicator()
+                    : Text(buttonPressedOnce ? 'Measure Light Again' : 'Get Lux Value'),
+              ),
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
