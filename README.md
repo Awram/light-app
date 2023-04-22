@@ -1,4 +1,4 @@
-# my_app
+# Light App
 
 A new Flutter project.
 
