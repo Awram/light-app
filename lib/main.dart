@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-// this text is for testing pull request -Tejas
+import 'package:intl/intl.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,8 @@ class _LuxDisplayState extends State<LuxDisplay> {
   static const platform = const MethodChannel('com.example.myapp/light_sensor');
   double lux = 0;
   bool isLoading = false;
+  final numberFormatter = NumberFormat("#,##0", "en_US"); // Create a number formatter
+
 
   Future<double> getLuxValue() async {
     try {
@@ -75,7 +78,7 @@ class _LuxDisplayState extends State<LuxDisplay> {
               style: Theme.of(context).textTheme.headline5,
             ),
             Text(
-              '$lux',
+              numberFormatter.format(lux), // Format the lux value
               style: Theme.of(context).textTheme.headline3,
             ),
             SizedBox(height: 20), // Add some space between the text and button
