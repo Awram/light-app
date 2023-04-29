@@ -127,9 +127,6 @@ class _LuxDisplayState extends State<LuxDisplay> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Lux Display'),
-      ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -201,6 +198,55 @@ class InfoPage extends StatefulWidget {
 class _InfoPageState extends State<InfoPage> {
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Blank page'));
+    return Scaffold(
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text(
+            '10 Takeaways from Huberman\'s Light Podcasts, Regarding the Health Benefits of Light',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          _buildListItem(
+              'Light exposure affects the body\'s circadian rhythm, which regulates sleep, wakefulness, and many other physiological processes.'),
+          _buildListItem(
+              'Blue light in particular can be used to shift the circadian rhythm and improve sleep quality, alertness, and mood.'),
+          _buildListItem(
+              'Morning exposure to bright blue light can help reset the circadian rhythm and alleviate symptoms of seasonal affective disorder (SAD).'),
+          _buildListItem(
+              'Red light, on the other hand, has anti-inflammatory effects and can promote healing and tissue repair.'),
+          _buildListItem(
+              'Infrared light has been shown to improve physical performance, reduce inflammation, and enhance recovery from injury.'),
+          _buildListItem(
+              'Light exposure can affect hormone levels, such as melatonin and cortisol, which in turn can influence mood, energy levels, and immune function.'),
+          _buildListItem(
+              'Light exposure can affect the brain\'s reward system, leading to increased motivation and positive affect.'),
+          _buildListItem(
+              'The eyes are not the only part of the body that respond to light; skin, for example, also has light-sensitive receptors that can trigger physiological responses.'),
+          _buildListItem(
+              'Bright light exposure can be used to treat jet lag and shift work disorder, which are characterized by disrupted circadian rhythms.'),
+          _buildListItem(
+              'Light exposure can have both positive and negative effects on health, depending on the timing, duration, and intensity of exposure, as well as individual differences in sensitivity and susceptibility. Therefore, it is important to tailor light exposure strategies to individual needs and goals.'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '• ',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: Text(text),
+          ),
+        ],
+      ),
+    );
   }
 }
